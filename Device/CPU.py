@@ -25,8 +25,8 @@ class CPU:
     # grab the header because fuck you
     header = bytearray(0x10)
 
-    # should we hault
-    hault = False
+    # should we halt
+    halt = False
     # the string to the file
     file: str 
     
@@ -306,9 +306,9 @@ class CPU:
         # https://www.youtube.com/watch?v=arnWU1sWqKw
         # basic switch statement
         match opcode:
-            # hault command
+            # halt command
             case 0x02: # HTL
-                self.hault = True
+                self.halt = True
                 pass
             
         #&__________________________LDA__________________________&#
@@ -1726,14 +1726,14 @@ class CPU:
     def run(self) -> None:
         # while interupt is not set
         # print(f"\n\nPC: {hex(self.PC)[2:].upper():04}	--		RESET			A: 00   X: 00    Y :00      SP: {hex(self.SP)[2:].upper():02}    Cycles: 0\n")
-        while not self.hault:
+        while not self.halt:
             self.CPU()
         # RAMTEST = list(self.RAM)
         # print("done")
         
     # run a single line
     def runCommand(self) -> None:
-        if not self.hault:
+        if not self.halt:
             self.CPU()
 
             
