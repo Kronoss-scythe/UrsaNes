@@ -151,7 +151,7 @@ class CPU:
     # set the over flow flag
     # essentially if the last bit is the same on both the two inputs AND the first input and the output, then we did over flow AKA if both the inputs are negative or positive and the output is the opposite we overflowd
     # if is flipped then we instead check if both inputs are different and the first input is the same as the output, 
-    #^ HARD CODE THIS
+    #^ HARD CODE THIS LATER
     def setOverflow(self, input1: int, input2: int, output: int, isFlipped = False) -> None:
         if isFlipped:
             self.fOverflow = ((input1 ^ input2) & (input1 ^ output) & 0x80) != 0
@@ -163,6 +163,7 @@ class CPU:
     #^______________________________________________________Common functions______________________________________________________^#
     
     # arithmetic shift
+    # check flags zero and carry, where carry is a 9th bit and also check negative
     def ASL(self, value: int) -> int:
         self.fCarry = value > 127
         value <<= 1
@@ -172,6 +173,8 @@ class CPU:
         return value
     
     # logical shift right
+    # change zero flag and always set negative as false apparently
+    # i mean it should never be true
     def LSR(self, value: int) -> int:
         self.fCarry = (value & 0b1) != 0
         value >>= 1
@@ -180,6 +183,7 @@ class CPU:
         return value
     
     # rotate left
+    # change carry flag, zero flag and negative flag
     def ROL(self, value: int) -> int:
         value <<= 1
         value += self.fCarry
@@ -192,6 +196,7 @@ class CPU:
         return value
     
     # rotate right
+    # same as before, however we just kinda, steal the old first bit
     def ROR(self, value: int) -> int:
         temp = (value & 0b1) != 0
         value >>= 1
@@ -203,21 +208,35 @@ class CPU:
         self.fNegative = value > 127
         return value
     
+    # or with specifically A
+    # IM NOT FUCKING EXPLAINING AN OR OPERATION TO YOU YOU FUCKING BITCH ASS MOTHER FUCKER [DATA EXPUNGED] [DATA EXPUNGED] [DATA EXPUNGED] and i'll shove it up your not so pretty [DATA EXPUNGED]
+    # [DATA EXPUNGED] [DATA EXPUNGED] [DATA EXPUNGED] [DATA EXPUNGED] WITH A GIANT PINK [DATA EXPUNGED] [DATA EXPUNGED] WITH [DATA EXPUNGED]
+    # changes negative flag and zero flag
     def ORA(self, value: int) -> None: # Or function
         self.A |= value
         self.fNegative = self.A > 127
         self.fZero = self.A == 0
-        
+    
+    # I'm tired boss
+    # and function
+    # changes zero and negative 
     def AND(self, value: int) -> None: # And function
         self.A &= value
         self.fNegative = self.A > 127
         self.fZero = self.A == 0
-        
+    
+    # I'll PAY for your damn online course on basic logic
+    # negative and zero again
     def EOR(self, value: int) -> None: # Xor function
         self.A ^= value
         self.fNegative = self.A > 127
         self.fZero = self.A == 0
-        
+    
+    # ok now we are getting complicated
+    # add with c
+    # we dont have a normal add
+    # so instead we add a value to a and also add the carry flag
+    # then we do a normal negative, carry, zero and overflow check
     def ADC(self, value: int) -> None: # add with carry function
         temp = self.A + value + self.fCarry
         
@@ -228,6 +247,8 @@ class CPU:
         self.fNegative = self.A > 127
         self.fZero = self.A == 0
 
+    # subtract with c, same as before, however carry is set if the value we get is greater then or equal to 0
+    # otherwise same as before
     def SBC(self, value: int) -> None: # sub with carry function
         temp = self.A - value - (self.fCarry == 0)
         
@@ -238,11 +259,21 @@ class CPU:
         self.fNegative = self.A > 127
         self.fZero = self.A == 0
     
+    # compare function
+    # carry is set if the value is less then or equal to the register
+    # zero is set if they are the same number
+    # negative is set if subtracting the register from the value is negative
     def CMP(self, value: int, register: int) -> None: #compare with A
         self.fCarry = value <= register
         self.fZero = value == register
         self.fNegative = ((register - value) & 0xFF) > 127
         
+    # fascinatingly
+    # this is called a bit compare
+    # zero is set if they are the same , idk why i did & instead of ==. whatever
+    # also fnegative is set if the last bit is set, normal
+    # weirdly though, overflow is set if the second to last bit is set
+    #  
     def BIT(self, value: int) -> None: # bit test with A
         self.fZero = (self.A & value) == 0
         self.fNegative = (value & 0x80) != 0
@@ -256,17 +287,26 @@ class CPU:
         
     
     
-    
+    # now we have the CPU function, i should change this name but its so cool.
+    # this just executes a single instruction
     def CPU(self) -> None:
-        
+        # read the opcode
+        # and increment the pc
         opcode = self.read(self.PC)
         self.incrementPC()
+        
+        # some basic trace printing for in file debugging
+        # should be commented out normally, to save an if statement
         if self.shouldPrint == True:
             fstr = chr(ord('n')- 32 * self.fNegative) + chr(ord('v')- 32 * self.fOverflow) + '--' + chr(ord('d')- 32 * self.fDecimal) + chr(ord('i')- 32 * self.fInterruptDisable) + chr(ord('z')- 32 * self.fZero) + chr(ord('c')- 32 * self.fCarry)
             print(f"PC: {hex(self.PC - 1)[2:].upper():0>4}        {hex(opcode)[2:].upper():0>2} {hex(self.read(self.PC))[2:].upper():0>2}       			        A:{hex(self.A)[2:].upper():0>2}\tX:{hex(self.X)[2:].upper():0>2}\tY:{hex(self.Y)[2:].upper():0>2}\tSP:{hex(self.SP)[2:].upper():0>2}\t{fstr}\tCycles:{self.totalCycles}")
         
-        
+        # HERE SHE COMES
+        # THIS MONSTER OF AN OPCODE LIST
+        # https://www.youtube.com/watch?v=arnWU1sWqKw
+        # basic switch statement
         match opcode:
+            # hault command
             case 0x02: # HTL
                 self.hault = True
                 pass
@@ -570,7 +610,8 @@ class CPU:
                 self.cycles += 4
             
             
-          
+        
+        #&__________________________BNH__________________________&#    
             case 0x10: # BPL pranch on plus, !negative flag
                 temp =  self.read(self.PC)
                 self.incrementPC()
@@ -685,7 +726,7 @@ class CPU:
                     self.cycles += 2
             
             
-            
+        #&________________________PHA/PLA________________________&#   
             case 0x48: # PHA or push a
                 self.push(self.A)
                 self.cycles += 3
@@ -694,7 +735,9 @@ class CPU:
                 self.fZero = (self.X == 0)
                 self.fNegative = (self.X > 127)
                 self.cycles += 4
+                
 
+        #&________________________JSR/RTS________________________&#  
             case 0x20: # JSR, jump to subroutine n where n is a 2 byte little endian address, and push PC to stack
                 address = self.absolute()
                 
@@ -1596,7 +1639,7 @@ class CPU:
             
             
             
-            
+        #&________________________BRK/RTI________________________&#  
             case 0x00: # BRK, break routine and jump to the address from 0xfffe to 0xffff, implied
                 self.incrementPC()
                 
@@ -1636,6 +1679,11 @@ class CPU:
                 self.PC = self.littleN(least, most)
                 self.cycles += 6
                 
+            
+            
+            
+            
+        #&__________________________NOP__________________________&#  
             case 0xEA: #NOP, yk, none
                 self.cycles += 2
 
@@ -1651,9 +1699,15 @@ class CPU:
             
         
 
-
+    # reset command
+    # ran whenever the N.E.S is setup
     def reset(self) -> None:
-        with open(self.file, 'rb') as f: #^ change the hard coding
+        # open the file
+        with open(self.file, 'rb') as f:
+            # grab the rom and uh, do nothing ig
+            # i could do something with this
+            # one day
+            #^ DO A HEADER CHECK
             headeredROM = bytearray(f.read())
             self.ROM = headeredROM[0x10:0x8010] # the rom is 0x8010 lines long but we want to skip the header hence the weird concacting
             self.header = headeredROM[:0x10] #store header
@@ -1662,20 +1716,22 @@ class CPU:
             self.PC = int((PCH * 0x100) + PCL) # turn into little endian
             self.SP = 0xFD
             self.fInterruptDisable = True
+            # this takes 7 cycles so add to total cycles
             self.totalCycles = 7
         
         
     
     
-    
+    # basic run
     def run(self) -> None:
-        print(f"\n\nPC: {hex(self.PC)[2:].upper():04}	--		RESET			A: 00   X: 00    Y :00      SP: {hex(self.SP)[2:].upper():02}    Cycles: 0\n")
+        # while interupt is not set
+        # print(f"\n\nPC: {hex(self.PC)[2:].upper():04}	--		RESET			A: 00   X: 00    Y :00      SP: {hex(self.SP)[2:].upper():02}    Cycles: 0\n")
         while not self.hault:
             self.CPU()
         # RAMTEST = list(self.RAM)
         # print("done")
         
-    
+    # run a single line
     def runCommand(self) -> None:
         if not self.hault:
             self.CPU()
