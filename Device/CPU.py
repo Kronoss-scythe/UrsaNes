@@ -2,57 +2,74 @@
 
 
 class CPU:
-    def __init__(self, string, shouldPrint = False):
+    def __init__(self, string, debug = False):
         self.file = string
-        self.shouldPrint = shouldPrint
+        # if you want to print debug
+        self.shouldPrint = debug
         return
     
-    PC = 0
-    SP = 0
-    A = 0
-    X = 0
-    Y = 0
-    cycles = 0
-    totalCycles = 0
     
+    PC = 0  # Program counters bitch (16 bit)
+    SP = 0  # stack pointers fucker  (8 bit)
+    A = 0   # a register shithead. also called accumalator because why the fuck not (8 bit)
+    X = 0   # x register dumbass (8 bit)
+    Y = 0   # y register [DATA EXPUNGED] (8 bit)
+    cycles = 0 # cycles instruction took to make
+    totalCycles = 0 # total cycles for debugging purposes
+    
+    # RAM, 2048 bytes, with some mirroring from address 0 to address 8000
+    # She a thick girl, 2.048 KILOBYTES OF RAM WHOOOOOOOOOOOOOOOOOOOOOOOO
     RAM = bytearray(0x800)
+    # ROM, 32.768 bytes of ROM, implement Mapper chips outside 
     ROM = bytearray(0x8000)
+    # grab the header because fuck you
     header = bytearray(0x10)
 
+    # should we hault
     hault = False
-    file: str
+    # the string to the file
+    file: str 
     
+    # our flags
+    # when put in a register it should look like NV--DIZC
     fCarry = False
     fZero = False
     fInterruptDisable = True
     fDecimal = False
     fOverflow = False
     fNegative = False
-            
+    
+    # honey if you can't read I can't save you
     def incrementPC(self, value = 1) -> None:
         self.PC = (self.PC + value) & 0xFFFF
         
-        
-
+    # so the RAM and ROM are all in one like, lookup table, so from 0 - 0x8000 is ram, where it reset every 0x800 indexes to 0, because ram mirroring (0x00 == 0x800)
+    # onwards is just ROM
     def read(self, Address: int) -> int:
         if Address < 0x8000:
             return self.RAM[Address % 0x800]
         else: # ROM stuff from this point on
             return self.ROM[(Address - 0x8000)]
 
+    # Ditto, except we have an error message, that i will remove in a bit
     def write(self, Address: int, Value: int) -> None:
         if Address < 0x8000:
             self.RAM[Address % 0x800] = Value
         else: # ROM stuff from this point on
             string = f'\tYou were trying to write to the ROM. It literally stands for READ ONLY MEMORY, dipshit :3. \n\t\t\tThe Address you were trying to write too was <{hex(Address)}>. \n\t\tRemember only addresses between 0x0000 and 0x7fff are part of RAM and its mirrors. \n\t\t0x000 to 0x7ff are the base RAM adresses and it repeats from there (So 0x0800 = 0x1000 = 0x0000)'
+            print(string)
 
+    # Push a value to stack, make sure to only push 8 bit values
     def push(self, Value) -> None:
         self.write(0x100 + self.SP, Value)
         self.SP = (self.SP - 1) & 0xFF
+    # we pull from the stack, come on girl you know this, and if you dont, search up stacks in computers
     def pull(self) -> int:
         self.SP = (self.SP + 1) & 0xFF
         return self.read(0x100 + self.SP)
     
+    # basic function to turn two 8 bit values to a 16 bit value
+    #^ SHOULD HARD CODE THIS IN EVENTUALLY
     def littleN(self, least, most) -> int:
         x = most << 8
         x = x + least
@@ -63,22 +80,44 @@ class CPU:
             
     
     
-    
+    # absolute addressing, how that works is it reads a 16 bit value, adds any arguements, and then returns the address it read, so that we can read it in the function
+    # its done this way so that we can save the address for specific instructions
+    # also if we pass a page boundary we add a cycle (if specified (I have no idea why some instructions dont add cycles if it crosses a boundary thats insane))
+    # so for example if we have an address read of [0x20ff], and we have [args = 2] then we add a cycle because we crossed a page boundary 
+    # (instead of being [0x20NN] its [0x21NN], essentialy a page is 0xff entries) 
+    # also apparently if statements are faster then bit operations nowadays, til
     def absolute(self, args = 0, addCycles = True) -> int:
         least = self.read(self.PC)
         self.incrementPC()
         most = self.read(self.PC)
         least = (least + args)
+        
         if least > 0xff and addCycles:
             self.cycles += 1
         
         address = (self.littleN(least, most))
-        return address & 0xFFFF # wrap around if needed
+        return address & 0xFFFF # wrap around
     
+    # zeroPage, just read one address, then return it
+    # dont forget wrap around
     def zeroPage(self, args = 0) -> int:
         address = self.read(self.PC) + args 
         return address & 0xFF
 
+    # pure evil. pure pure evil.
+    # ok, so in preinedxed indirect, for some reason, crossing a page boundary rewraps to the zero page
+    # yet
+    # for some FUCKING reason
+    # post indexed indirect crosses a page boundary
+    # i spent
+    # two days
+    # TWO DAYS
+    # trying to figure this shit out
+    #     :return: The `indirectPreIndexed` method returns an address calculated using the value at the
+    #     Program Counter (PC) plus the X register, reading two bytes from memory at the calculated address
+    #     and the next address, combining them into a 16-bit address, and returning the result.
+    # """
+    # do you see this shit. this is why you shouldnt let ai auto document for you. god what the fuck is this, this is such an awful comment
     def indirectPreIndexed(self) -> int:
         inAddress = self.read(self.PC) + self.X
         inAddress &= 0xFF
@@ -89,6 +128,7 @@ class CPU:
         address = (self.littleN(least, most))
         return address & 0xFFFF
     
+    # same as before, jsut without any fancy zeropaging because we instead increment after we read the first value, and properly implement wraparound
     def indirectPostIndexed(self, addCycles = True) -> int:
         inAddress = self.read(self.PC)
         
@@ -100,6 +140,7 @@ class CPU:
         address = (self.littleN(least, most))
         return address & 0xFFFF
 
+    # so we just return the amount we should increment the program counter, by reading a byte value
     def relative(self) -> int:
         temp =  self.read(self.PC)
         self.incrementPC()
@@ -107,6 +148,10 @@ class CPU:
             temp -= 256
         return temp
 
+    # set the over flow flag
+    # essentially if the last bit is the same on both the two inputs AND the first input and the output, then we did over flow AKA if both the inputs are negative or positive and the output is the opposite we overflowd
+    # if is flipped then we instead check if both inputs are different and the first input is the same as the output, 
+    #^ HARD CODE THIS
     def setOverflow(self, input1: int, input2: int, output: int, isFlipped = False) -> None:
         if isFlipped:
             self.fOverflow = ((input1 ^ input2) & (input1 ^ output) & 0x80) != 0
@@ -1627,7 +1672,7 @@ class CPU:
         print(f"\n\nPC: {hex(self.PC)[2:].upper():04}	--		RESET			A: 00   X: 00    Y :00      SP: {hex(self.SP)[2:].upper():02}    Cycles: 0\n")
         while not self.hault:
             self.CPU()
-        RAMTEST = list(self.RAM)
+        # RAMTEST = list(self.RAM)
         # print("done")
         
     
@@ -1638,6 +1683,7 @@ class CPU:
             
 
 def test(string): # for testing purpose only
+    
     X = CPU(string, True)
     X.reset()
     X.run()
