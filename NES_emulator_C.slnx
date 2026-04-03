@@ -1,0 +1,10 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="test" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="NES_emulator_C/NES_emulator_C.vcxproj" Id="4cfefdf4-3e80-4fe3-b050-2e9a8938b7d1" />
+</Solution>

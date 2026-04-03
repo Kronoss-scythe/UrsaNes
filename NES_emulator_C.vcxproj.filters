@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include=".etc">
+      <UniqueIdentifier>{fbd2f649-1e4c-4141-ac76-0acf43d44be4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Motherboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="test.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="6502.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Motherboard.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".etc\Notes\instructions.md">
+      <Filter>.etc</Filter>
+    </None>
+    <None Include=".etc\Notes\notes.md">
+      <Filter>.etc</Filter>
+    </None>
+    <None Include=".etc\__PatreonRoms\1_Example.nes">
+      <Filter>.etc</Filter>
+    </None>
+    <None Include=".etc\__PatreonRoms\2_ReadWrite.nes">
+      <Filter>.etc</Filter>
+    </None>
+    <None Include=".etc\__PatreonRoms\3_Branches.nes">
+      <Filter>.etc</Filter>
+    </None>
+    <None Include=".etc\__PatreonRoms\4_TheStack.nes">
+      <Filter>.etc</Filter>
+    </None>
+    <None Include=".etc\__PatreonRoms\5_Instructions1.nes">
+      <Filter>.etc</Filter>
+    </None>
+    <None Include=".etc\__PatreonRoms\6_Instructions2.nes">
+      <Filter>.etc</Filter>
+    </None>
+    <None Include=".etc\__PatreonRoms\7_Graphics.nes">
+      <Filter>.etc</Filter>
+    </None>
+    <None Include=".etc\__PatreonRoms\tests.nes">
+      <Filter>.etc</Filter>
+    </None>
+    <None Include="..\x64\Release\NES_emulator_C.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include=".etc\Notes\Screenshot 2025-11-20 090549.png">
+      <Filter>.etc</Filter>
+    </Image>
+    <Image Include=".etc\Notes\Screenshot 2025-11-20 091752.png">
+      <Filter>.etc</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
