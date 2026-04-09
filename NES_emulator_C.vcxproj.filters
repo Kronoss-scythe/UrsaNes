@@ -21,6 +21,12 @@
     <ClInclude Include="Motherboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.c">
@@ -29,7 +35,10 @@
     <ClCompile Include="6502.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Motherboard.c">
+    <ClCompile Include="Opcodes.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

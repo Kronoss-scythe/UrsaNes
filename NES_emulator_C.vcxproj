@@ -155,11 +155,14 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Includes.h" />
     <ClInclude Include="Motherboard.h" />
+    <ClInclude Include="Renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="6502.c" />
-    <ClCompile Include="Motherboard.c" />
+    <ClCompile Include="Opcodes.c" />
+    <ClCompile Include="Renderer.c" />
     <ClCompile Include="test.c" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,5 @@
-#ifndef _MOTHERBOARD_H_
-#define _MOTHERBOARD_H_
+#ifndef MOTHERBOARD_H
+#define MOTHERBOARD_H
 //           X                                                                       
 // X                   X                      X                     X                
 //                                X                          X                       
@@ -25,12 +25,7 @@
 //                  X            X                X           X               X      
 // https://www.asciiart.eu/ascii-draw-studio/app
 //? remove all //? comments later
-
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <string.h>
-	#include <stdbool.h>
-	#include <errno.h>
+	#include "Includes.h"
 
 	typedef unsigned short ushort;
 	typedef unsigned char byte;

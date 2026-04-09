@@ -28,7 +28,7 @@ CPUStruct* init(void) {
 int totalCycles = 0;
 
 
-void static debug(CPUStruct* CPU) {
+void debug(CPUStruct* CPU) {
     char flags[] = { 'n' - 32 * CPU->n, 'v' - 32 * CPU->v, '-', '-', 'd' - 32 * CPU->d, 'i' - 32 * CPU->i, 'z' - 32 * CPU->z, 'c' - 32 * CPU->c, '\0'};
     printf("$%04X	%02X %02X        		        A:%02X    X:%02X    Y:%02X    SP:%02X   %s        Cycle: %d\n", CPU->PC, read(CPU->PC, CPU), read(CPU->PC + 1, CPU), CPU->A, CPU->X, CPU->Y, CPU->SP, flags, totalCycles);
     return;

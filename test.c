@@ -1,25 +1,28 @@
 //? remove all //? comments later
 #include "Motherboard.h"
+#include "Renderer.h"
+
+
 #include <time.h>
 #include <string.h>
 //void traceDebug(CPUStruct* CPU);
 
 int main(void) {
-    char filepath[1024] = "\0";
-    CPUStruct* CPU = init();
-    do {
-        printf("HELLO, input file path:\n");
-        fgets(filepath, 1024, stdin);
-        *strchr(filepath, '\n') = '\0';
-        end(CPU);
-        CPU = init();
-    }while(Reset(CPU, filepath));
-    Run(CPU);
+    //char filepath[1024] = "\0";
+    //CPUStruct* CPU = init();
+    //do {
+    //    printf("HELLO, input file path:\n");
+    //    fgets(filepath, 1024, stdin);
+    //    *strchr(filepath, '\n') = '\0';
+    //    end(CPU);
+    //    CPU = init();
+    //}while(Reset(CPU, filepath));
+    //Run(CPU);
 
-	end(CPU);
+    //end(CPU);
 
-	printf("press enter to exit\n");
-    scanf_s("%c");
+    testWindows();
+
     return 0;
 }
 
