@@ -42,7 +42,7 @@ Based off of the Nintendo Entertainment System
      https://www.youtube.com/watch?v=qOgGn1ihyGo&list=PLKUl_fMWLdH8Kk4iFnWHhU43xXG2t6bjf
 
 ## REAL RATING
-![Real rating](/Assets/images/1 REAL rating@4x.png)
+![Real rating](/Assets/REALRATING.png)
 ### Automation used: 
 -Intellisense
 ### Disclaimer
